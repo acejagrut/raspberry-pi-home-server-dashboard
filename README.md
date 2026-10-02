@@ -73,8 +73,8 @@ Pi Home itself uses about 30 to 50 MB of memory.
 On the Pi:
 
 ```bash
-git clone https://github.com/acejagrut/pi-home.git
-cd pi-home
+git clone https://github.com/acejagrut/raspberry-pi-home-server-dashboard.git
+cd raspberry-pi-home-server-dashboard
 sudo bash install.sh
 ```
 
@@ -108,7 +108,7 @@ Open that link on any of your Tailscale devices.
 Get the newest version and run the installer again. It keeps your PIN, photo and settings.
 
 ```bash
-cd pi-home
+cd raspberry-pi-home-server-dashboard
 git pull
 sudo bash install.sh
 ```
