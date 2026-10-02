@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pi Home">
+<meta name="description" content="Your Raspberry Pi at a glance.">
+<title>Pi Home</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="/app.css?v=__VERSION__">
+<script src="/app.js?v=__VERSION__" defer></script>
+</head>
+<body>
+
+<div id="offline" class="offline" hidden role="status">
+  <span class="dot dot-red"></span><span>Can't reach your Pi. Check that it's on and Tailscale is connected.</span>
+</div>
+
+<section id="lock" class="lock" hidden aria-label="Enter your PIN">
+  <div class="lock-inner">
+    <div class="lock-photo" id="lock-photo"><img src="/icons/logo.svg" alt=""></div>
+    <h1 class="lock-title" id="lock-title">Pi Home</h1>
+    <p class="lock-sub" id="lock-sub">Enter your PIN to open</p>
+    <label class="pin-field" id="pin-field" for="pin-input">
+      <span class="sr-only">PIN</span>
+      <input id="pin-input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6"
+             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
+      <span class="pin-dots" id="pin-dots" aria-hidden="true"></span>
+    </label>
+    <p class="lock-hint" id="lock-hint">Tap the dots to type your PIN</p>
+    <p class="lock-error" id="lock-error" role="alert"></p>
+    <p class="lock-foot">Only your Tailscale devices can reach this app</p>
+  </div>
+</section>
+
+<div id="app" class="app" hidden>
+  <aside class="sidebar">
+    <a class="brand" href="#/dashboard">
+      <img class="logo-mark" src="/icons/logo.svg" alt="">
+      <span>Pi Home</span>
+    </a>
+    <nav aria-label="Main" class="nav">
+      <div class="nav-label">MENU</div>
+      <a href="#/dashboard" data-route="dashboard"><span class="i" data-icon="grid"></span>Dashboard</a>
+      <a href="#/files" data-route="files"><span class="i" data-icon="folder"></span>Files</a>
+      <a href="#/ads" data-route="ads"><span class="i" data-icon="shield"></span>Ad blocking</a>
+      <a href="#/control" data-route="control"><span class="i" data-icon="power"></span>Control</a>
+    </nav>
+    <nav aria-label="General" class="nav">
+      <div class="nav-label">GENERAL</div>
+      <a href="#/settings" data-route="settings"><span class="i" data-icon="settings"></span>Settings</a>
+      <button type="button" class="nav-btn" data-action="lock"><span class="i" data-icon="lock"></span>Lock</button>
+    </nav>
+    <div class="side-card" id="install-card">
+      <div class="side-card-icon"><span class="i" data-icon="phone"></span></div>
+      <div class="side-card-title">Add Pi Home to your home screen</div>
+      <div class="side-card-text">Opens full-screen like an app on your phone and tablet.</div>
+      <button type="button" class="btn btn-yellow" data-action="install-help">Show me how</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <a class="tb-brand" href="#/dashboard">
+        <img class="logo-mark" src="/icons/logo.svg" alt="">
+        <span class="tb-brand-text"><strong>Pi Home</strong><span class="tb-status"><span class="dot dot-green" data-online-dot></span><span data-host-line>Connecting…</span></span></span>
+      </a>
+      <form class="search" id="search-form" role="search">
+        <span class="i" data-icon="search"></span>
+        <label class="sr-only" for="search-input">Search your files</label>
+        <input id="search-input" type="search" placeholder="Search your files" autocomplete="off">
+      </form>
+      <div class="tb-right">
+        <div class="bell-wrap">
+          <button type="button" class="icon-btn" id="bell" aria-label="Alerts" aria-expanded="false" aria-controls="alerts-pop">
+            <span class="i" data-icon="bell"></span><span class="bell-dot" id="bell-dot" hidden></span>
+          </button>
+          <div class="popover" id="alerts-pop" hidden></div>
+        </div>
+        <a class="tb-avatar" href="#/settings" aria-label="Your profile"><span class="avatar" data-avatar></span></a>
+        <a class="profile" href="#/settings">
+          <span class="avatar" data-avatar></span>
+          <span><strong data-user-name></strong><span class="tb-status"><span class="dot dot-green" data-online-dot></span><span data-host-line>Connecting…</span></span></span>
+        </a>
+      </div>
+    </header>
+    <section class="panel" id="view" tabindex="-1" aria-live="polite"></section>
+  </main>
+</div>
+
+<nav class="tabs" id="tabs" aria-label="Tabs" hidden>
+  <a href="#/dashboard" data-route="dashboard"><span class="tab-pill"><span class="i" data-icon="grid"></span></span>Home</a>
+  <a href="#/files" data-route="files"><span class="tab-pill"><span class="i" data-icon="folder"></span></span>Files</a>
+  <a href="#/ads" data-route="ads"><span class="tab-pill"><span class="i" data-icon="shield"></span></span>Ads</a>
+  <a href="#/control" data-route="control"><span class="tab-pill"><span class="i" data-icon="power"></span></span>Control</a>
+</nav>
+
+<div id="modal-root"></div>
+<div id="uploads" class="uploads" hidden></div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<input type="file" id="file-input" multiple hidden>
+</body>
+</html>

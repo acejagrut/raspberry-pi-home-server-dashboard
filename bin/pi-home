@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+APP_DIR=/opt/pi-home
+CONF_DIR=/etc/pi-home
+
+need_root() { [[ $EUID -eq 0 ]] || { echo "Please run it with sudo:  sudo pi-home $1"; exit 1; }; }
+
+case "${1:-help}" in
+  link)
+    if [[ -f "$CONF_DIR/link" ]]; then cat "$CONF_DIR/link"
+    else tailscale status --json | python3 -c 'import sys,json; print("https://"+json.load(sys.stdin)["Self"]["DNSName"].rstrip("."))'; fi
+    ;;
+  status)
+    systemctl is-active --quiet pi-home && echo "Pi Home is running." || echo "Pi Home is stopped. Start it: sudo pi-home restart"
+    tailscale serve status 2>/dev/null || true
+    ;;
+  pin)
+    need_root pin
+    PIHOME_CONFIG="$CONF_DIR/config.json" python3 "$APP_DIR/app.py" set-pin
+    systemctl restart pi-home
+    echo "Done. Open Pi Home again with your new PIN."
+    ;;
+  logs)
+    journalctl -u pi-home -n 60 --no-pager
+    ;;
+  restart)
+    need_root restart
+    systemctl restart pi-home && echo "Pi Home restarted."
+    ;;
+  uninstall)
+    need_root uninstall
+    read -r -p "Remove Pi Home? Your files stay untouched. [y/N] " yes
+    [[ "${yes,,}" == y* ]] || { echo "Nothing changed."; exit 0; }
+    tailscale serve --https=443 off >/dev/null 2>&1 || true
+    systemctl disable --now pi-home >/dev/null 2>&1 || true
+    rm -f /etc/systemd/system/pi-home.service
+    systemctl daemon-reload
+    rm -rf "$APP_DIR" "$CONF_DIR"
+    rm -f /usr/local/bin/pi-home
+    echo "Pi Home is removed."
+    ;;
+  *)
+    cat <<EOF
+Pi Home
+  pi-home link            show your private link
+  pi-home status          is it running?
+  sudo pi-home pin        set a new PIN (also if you forgot it)
+  pi-home logs            recent messages, if something's wrong
+  sudo pi-home restart    restart the app
+  sudo pi-home uninstall  remove Pi Home (your files stay)
+EOF
+    ;;
+esac
